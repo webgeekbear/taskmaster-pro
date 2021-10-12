@@ -13,6 +13,8 @@ var createTask = function (taskText, taskDate, taskList) {
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  // check due date
+  auditTask(taskLi);
 
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
@@ -172,6 +174,9 @@ $(".list-group").on("change", "input[type='text']", function () {
     .addClass("badge badge-primary badge-pill")
     .text(date);
   $(this).replaceWith(taskSpan);
+
+  // Check new due date
+  auditTask($(taskSpan).closest(".list-group-item"));
 });
 
 // remove all tasks
@@ -255,6 +260,27 @@ $("#modalDueDate").datepicker({
     $(this).trigger("change");
   }
 });
+
+// Audit a task.  See if it is coming up or past due and color appropriately.
+// Takes an <li> element as a parameter.
+function auditTask(taskEl) {
+  // Get the date from a task element
+  let date = $(taskEl).find("span").text().trim();
+  console.log(date);
+
+  // Convert to moment object at 5:00pm
+  let time = moment(date, "L").set("hour", 17);
+
+  // remove old classes from element
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger");
+
+  // Apply new class if task is near/over due date
+  if (moment().isAfter(time)) {
+    $(taskEl).addClass("list-group-item-danger");
+  } else if (Math.abs(moment().diff(time, "days")) <= 2) {
+    $(taskEl).addClass("list-group-item-warning");
+  }
+}
 
 // load tasks for the first time
 loadTasks();
