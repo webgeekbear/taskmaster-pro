@@ -141,12 +141,17 @@ $(".list-group").on("click", "span", function () {
   // swap out elements
   $(this).replaceWith(dateInput);
 
+  // Enable jquery ui datepicker
+  dateInput.datepicker({
+    minDate: 1
+  });
+
   // automatically bring up the date input field
   dateInput.trigger("focus");
 });
 
 // value of due date was changed
-$(".list-group").on("blur", "input[type='text']", function () {
+$(".list-group").on("change", "input[type='text']", function () {
   let date = $(this).val();
 
   // get status type and position in the list
@@ -239,6 +244,15 @@ $("#trash").droppable({
   },
   out: function (event, ui) {
     console.log("out");
+  }
+});
+
+// set modal due date as a datepicker
+$("#modalDueDate").datepicker({
+  minDate: 1,
+  onClose: function () {
+    // When calendar is closed, force a "change" event on the 'dateInput'
+    $(this).trigger("change");
   }
 });
 
